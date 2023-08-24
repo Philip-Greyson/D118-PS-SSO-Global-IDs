@@ -106,9 +106,8 @@ if __name__ == '__main__': # main file execution
                                         print(f'ERROR on insertion of new PCAS TEACHER account for user {email} with DCID {dcid}: {err}', file=log)
 
                             else: # if they didnt have an access result, their old login info needs to be populated
-                                if dcid !=9625 and dcid !=9306: # REMOVE THIS IF YOU ARE NOT IN D118, hardcode some exceptions for old messed up profiles that dont work
-                                    print(f'ERROR on user {email} with DCID {dcid} when getting teacher identifier from AccessTeacher table, needs to have old login info populated!')
-                                    print(f'ERROR on user {email} with DCID {dcid} when getting teacher identifier from AccessTeacher table, needs to have old login info populated!', file=log)
+                                print(f'ERROR on user {email} with DCID {dcid} when getting teacher identifier from AccessTeacher table, needs to have old login info populated!')
+                                print(f'ERROR on user {email} with DCID {dcid} when getting teacher identifier from AccessTeacher table, needs to have old login info populated!', file=log)
 
                             # START OF THE ADMIN ACCESS BLOCK
                             cur.execute('SELECT AccountIdentifier FROM AccessAdmin WHERE TeachersDCID = :teacherDCID', teacherDCID=str(dcid))
