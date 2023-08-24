@@ -91,8 +91,8 @@ if __name__ == '__main__': # main file execution
                                             print(f'ERROR on update of PCAS STUDENT Account for user {email} with DCID {dcid}: {err}')
                                             print(f'ERROR on update of PCAS STUDENT Account for user {email} with DCID {dcid}: {err}', file=log)
                                 else:
-                                    print(f'\t\t\tACTION: No STUDENT Global ID found for {email} with DCID {dcid}, will try creating one')
-                                    print(f'\t\t\tACTION: No STUDENT Global ID found for {email} with DCID {dcid}, will try creating one', file = log)
+                                    print(f'ACTION: No STUDENT Global ID found for {email} with DCID {dcid}, will try creating one')
+                                    print(f'ACTION: No STUDENT Global ID found for {email} with DCID {dcid}, will try creating one', file = log)
                                     try:
                                         # create a string with the SQL Insert that uses bind variables to pass the variables. See here: https://python-oracledb.readthedocs.io/en/latest/user_guide/bind.html#bind
                                         insertSQL = "INSERT INTO PCAS_ExternalAccountMap (ApplicationUserType, OpenIDIssuerURL, OpenIDUserAccountID, PCAS_AccountToken, PCAS_ExternalAccountMapID) VALUES (:AccountType, :URL, :email, :studentToken, :entryNumber)"
