@@ -118,7 +118,7 @@ if __name__ == '__main__': # main file execution
                                 # print(f'\t\tDEBUG: Admin identifier for {dcid} is {adminIdentifier}') # debug
                                 # print(f'\t\tDEBUG: Admin identifier for {dcid} is {adminIdentifier}', file=log) # debug
 
-                                cur.execute("SELECT OpenIdUserAccountID FROM PCAS_ExternalAccountMap WHERE PCAS_AccountToken = :teacherToken", teacherToken =teacherIdentifier) # search for an existing PCAS_External account map account
+                                cur.execute("SELECT OpenIdUserAccountID FROM PCAS_ExternalAccountMap WHERE PCAS_AccountToken = :adminToken", adminToken =adminIdentifier) # search for an existing PCAS_External account map account
                                 pcasAccounts = cur.fetchall()
                                 # print(f'\t\t\t\tDEBUG: PCAS ADMIN: {pcasAccounts}') # debug
                                 # print(f'\t\t\t\tDEBUG: PCAS ADMIN: {pcasAccounts}', file=log) # debug
@@ -131,7 +131,7 @@ if __name__ == '__main__': # main file execution
                                         print(f'ACTION: Current PCAS ADMIN Email {currentPCASEmail} does not match PS Email {email}, UPDATING', file=log)
                                         try:
                                             # create a string with the SQL Update that uses bind variables to pass the variables. See here: https://python-oracledb.readthedocs.io/en/latest/user_guide/bind.html#bind
-                                            updateSQL = "UPDATE PCAS_ExternalAccountMap SET OpenIdUserAccountID = :email, ApplicationUserType = :AccountType, OpenIDIssuerURL = :URL WHERE PCAS_AccountToken = :teacherToken"
+                                            updateSQL = "UPDATE PCAS_ExternalAccountMap SET OpenIdUserAccountID = :email, ApplicationUserType = :AccountType, OpenIDIssuerURL = :URL WHERE PCAS_AccountToken = :adminToken"
                                             cur.execute(updateSQL, [email, "STAFF", "https://accounts.google.com", adminIdentifier]) # execute the update, pass the new email, type, identity provider, and teacher identifier
                                             con.commit()
                                         except Exception as err:
@@ -142,7 +142,7 @@ if __name__ == '__main__': # main file execution
                                     print(f'\t\t\tACTION: No ADMIN Global ID found for {email} with DCID {dcid}, will try creating one', file = log)
                                     try:
                                         # create a string with the SQL Insert that uses bind variables to pass the variables. See here: https://python-oracledb.readthedocs.io/en/latest/user_guide/bind.html#bind
-                                        insertSQL = "INSERT INTO PCAS_ExternalAccountMap (ApplicationUserType, OpenIDIssuerURL, OpenIDUserAccountID, PCAS_AccountToken, PCAS_ExternalAccountMapID) VALUES (:AccountType, :URL, :email, :teacherToken, :entryNumber)"
+                                        insertSQL = "INSERT INTO PCAS_ExternalAccountMap (ApplicationUserType, OpenIDIssuerURL, OpenIDUserAccountID, PCAS_AccountToken, PCAS_ExternalAccountMapID) VALUES (:AccountType, :URL, :email, :adminToken, :entryNumber)"
                                         cur.execute(insertSQL, ["STAFF", "https://accounts.google.com", email, adminIdentifier, newEntry]) # execute the insertion, pass the identity provider, email, their teacher identifier, and the count
                                         con.commit() # COMMIT THE CHANGES INTO THE DATABASE
                                         newEntry = newEntry + 1 # increment the new entry counter, really not neccessary but shouldnt hurt
