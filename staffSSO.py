@@ -54,8 +54,8 @@ if __name__ == '__main__': # main file execution
                     homeschool = int(user[2])
                     try: # put overall processing in try/except blocks so we can just skip a user on an error and continue
                         if email != "None" and (dcid not in brokenDCIDs): # only process users with emails and who are not in the brokenDCID list
-                            print(f'INFO: Starting user {email} at building {homeschool} with DCID: {dcid}')
-                            print(f'INFO: Starting user {email} at building {homeschool} with DCID: {dcid}', file=log)
+                            print(f'DBUG: Starting user {email} at building {homeschool} with DCID: {dcid}')
+                            print(f'DBUG: Starting user {email} at building {homeschool} with DCID: {dcid}', file=log)
                             
                             # GET THE PCAS_EXTERNAL TABLE UNIQUE COUNTER
                             cur.execute('SELECT PCAS_ExternalAccountMapID FROM PCAS_ExternalAccountMap ORDER BY PCAS_ExternalAccountMapID DESC') # get the internal counter, sort by descending so most recent value is first
@@ -102,8 +102,8 @@ if __name__ == '__main__': # main file execution
                                         con.commit() # COMMIT THE CHANGES INTO THE DATABASE
                                         newEntry = newEntry + 1 # increment the new entry counter so we can use it again in the admin portion if needed
                                     except Exception as err:
-                                        print(f'ERROR on insertion of new PCAS TEACHER account for user {email} with DCID {dcid}: {err}')
-                                        print(f'ERROR on insertion of new PCAS TEACHER account for user {email} with DCID {dcid}: {err}', file=log)
+                                        print(f'ERROR on insertion of new PCAS TEACHER account for user {email} with DCID {dcid}, teacherIdentifier - {teacherIdentifier}: {err}')
+                                        print(f'ERROR on insertion of new PCAS TEACHER account for user {email} with DCID {dcid}, teacherIdentifier - {teacherIdentifier}: {err}', file=log)
 
                             else: # if they didnt have an access result, their old login info needs to be populated
                                 print(f'ERROR on user {email} with DCID {dcid} when getting teacher identifier from AccessTeacher table, needs to have old login info populated!')
@@ -146,8 +146,23 @@ if __name__ == '__main__': # main file execution
                                         con.commit() # COMMIT THE CHANGES INTO THE DATABASE
                                         newEntry = newEntry + 1 # increment the new entry counter, really not neccessary but shouldnt hurt
                                     except Exception as err:
-                                        print(f'ERROR on insertion of new PCAS account for user {email} with DCID {dcid}: {err}')
-                                        print(f'ERROR on insertion of new PCAS account user {email} with DCID {dcid}: {err}', file=log)
+                                        print(f'ERROR on insertion of new PCAS account for user {email} with DCID {dcid}, adminIdentifier - {adminIdentifier}: {err}')
+                                        print(f'ERROR on insertion of new PCAS account for user {email} with DCID {dcid}, adminIdentifier - {adminIdentifier}: {err}', file=log)
+
+                                        # pretty unsafe deletion workaround, use with extreme caution, I suggest only using one DCID at a time to limit scope
+                                        # if dcid == xxxxx:
+                                            # print(f'WARN: Attempting to delete AccountIdentifier entries from AccessAdmin and AccessTeacher that match the DCID {dcid}')
+                                            # print(f'WARN: Attempting to delete AccountIdentifier entries from AccessAdmin and AccessTeacher that match the DCID {dcid}',file=log)
+                                            # cur.execute("DELETE FROM AccessAdmin WHERE TeachersDCID = :dcid", dcid = dcid) # delete entries with the same dcid
+                                            # cur.execute("DELETE FROM AccessTeacher WHERE TeachersDCID = :dcid", dcid = dcid) # delete entries with the same dcid
+                                            # con.commit() # COMMIT THE CHANGES INTO THE DATABASE
+
+                                            # print(f'WARN: Attempting to delete OpenIDUserAccountID entries from PCAS_ExternalAccountMap that match the email {email}')
+                                            # print(f'WARN: Attempting to delete OpenIDUserAccountID entries from PCAS_ExternalAccountMap that match the email {email}', file=log)
+                                            # cur.execute("DELETE FROM PCAS_ExternalAccountMap WHERE OpenIdUserAccountID = :email", email = email) # delete entries with the same email
+                                            # con.commit() # COMMIT THE CHANGES INTO THE DATABASE
+                                            # cur.execute("UPDATE PCAS_ExternalAccountMap SET OpenIdUserAccountID = :email, ApplicationUserType = :userType, OpenIDIssuerURL = :url WHERE PCAS_AccountToken = :accountToken", email=email, userType="STAFF", url="https://accounts.google.com", accountToken=adminIdentifier)
+                                            # con.commit() # COMMIT THE CHANGES INTO THE DATABASE
                             
                             else: # if they didnt have an access result, their old login info needs to be populated
                                 print(f'ERROR on user {email} with DCID {dcid} when getting admin identifier from AccessAdmin table, needs to have old login info populated!')
